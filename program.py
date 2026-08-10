@@ -12,41 +12,26 @@ utils.clean_terminal()
 
 #---------------------------------------------------------------------
 
-def carregando():
-    quantities = 0
-    while(quantities <= 2):
-        print(".", end="", flush=True)
-        quantities += 1
-        sleep(1)
-    print()
+def wait_to_load():
+    utils.clean_terminal()
+    utils.loading()
+    sleep(2)
+    utils.clean_terminal()
 
 def display_climate(latitude, longitude):
-    utils.clean_terminal()
-
-    carregando()
-
-    sleep(2)
-
-    utils.clean_terminal()
-
+    wait_to_load()
     get_climate = services.get_climate(latitude, longitude)
 
-    elevation = get_climate[0]
-    timezone = get_climate[1]
-    timezone_abbreviation = get_climate[2]
-    utc_offset_seconds = get_climate[3]
+    temp = get_climate['temp']
+    wind_speed = get_climate['wind'] 
+    precipitation = get_climate['precipitation']
 
-    print(f"Elevation: {elevation} m asl")
-    print(f"Timezone: {timezone}{timezone_abbreviation}")
-    print(f"Timezone difference to GMT+0: {utc_offset_seconds}s")
+    print(f"Temp is: {temp}°C")
+    print(f"Wind speed is: {wind_speed}")
+    print(f"And the precipitation is: {precipitation}mm")
 
 def display_coordenates(city):
-    carregando()
-
-    sleep(2)
-
-    utils.clean_terminal()
-
+    wait_to_load()
     coordenates = services.get_coordenates(city)
     latitude = coordenates[0]
     longitude = coordenates[1]
@@ -59,13 +44,13 @@ def display_coordenates(city):
 
 #---------------------------------------------------------------------
 
-city = input("Type one real city and it'll return the climate." \
-            "\n\n")
+while(True):
+    city = input("Type one real city and it'll return the climate." \
+                "\n\n")
 
-lat_lon = display_coordenates(city)
+    lat_lon = display_coordenates(city)
 
-sleep(3)
-display_climate(lat_lon[0], lat_lon[1])
+    sleep(3)
+    display_climate(lat_lon[0], lat_lon[1])
 
-
-
+    input("Press enter to return.")

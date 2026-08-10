@@ -22,16 +22,23 @@ def get_climate(lat, lon):
     params = {
     "latitude": lat,
     "longitude": lon,
-    "hourly": "temperature_2m",
+    "current": ["temperature_2m", "wind_speed_10m", "precipitation"],
     "timezone": "auto",       # <-- Resolvido! A API detecta o fuso local sozinha
-    "forecast_days": 1,
     }
 
     responses = openmeteo.weather_api(url, params = params)
     response = responses[0]
-    type_responses = [response.Elevation(), response.Timezone(), response.TimezoneAbbreviation(), response.UtcOffsetSeconds()]
+    current = response.Current()
 
-    return type_responses
+    temp = current.Variables(0).Value()  # temperature_2m
+    wind = current.Variables(1).Value()  # wind_speed_10m
+    precipitation = current.Variables(2).Value()
+
+    return {
+        "temp":  round(temp, 1),
+        "wind":        round(wind, 1),
+        "precipitation": round(precipitation, 1)
+    }
 
 def get_coordenates(city):
     url_api = "https://geocoding-api.open-meteo.com/v1/search"

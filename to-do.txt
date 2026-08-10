@@ -7,3 +7,8 @@ Usar as coordenadas pra buscar o clima atual
 Exibir temperatura, vento e precipitação formatados
 Perguntar se quer consultar outra cidade (loop)
 Tratar todos os erros possíveis — cidade não encontrada, sem internet, timeout
+
+
+
+- - - - - - - - - - - - - - - - - - - 
+Colocar escolhas para se ele quiser ver outra cidade
