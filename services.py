@@ -1,14 +1,37 @@
 import requests
 
+import openmeteo_requests
+import requests_cache
+from retry_requests import retry
+
+# Setup the Open-Meteo API client with cache and retry on error
+cache_session = requests_cache.CachedSession('.cache', expire_after = 3600)
+retry_session = retry(cache_session, retries = 5, backoff_factor = 0.2)
+openmeteo = openmeteo_requests.Client(session = retry_session)
+
 """
 Usar api para buscar as coordenadas e retornar a lat e lon
 Buscar o clima com a mesma api
 """
 
+#---------------------------------------------------------------------
 
 def get_climate(lat, lon):
-    return 0
 
+    url = "https://api.open-meteo.com/v1/forecast"
+    params = {
+    "latitude": lat,
+    "longitude": lon,
+    "hourly": "temperature_2m",
+    "timezone": "auto",       # <-- Resolvido! A API detecta o fuso local sozinha
+    "forecast_days": 1,
+    }
+
+    responses = openmeteo.weather_api(url, params = params)
+    response = responses[0]
+    type_responses = [response.Elevation(), response.Timezone(), response.TimezoneAbbreviation(), response.UtcOffsetSeconds()]
+
+    return type_responses
 
 def get_coordenates(city):
     url_api = "https://geocoding-api.open-meteo.com/v1/search"
