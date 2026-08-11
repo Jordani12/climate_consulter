@@ -31,14 +31,18 @@ def display_climate(latitude, longitude):
 def display_coordenates(city):
     wait_to_load()
     coordenates = services.get_coordenates(city)
-    latitude = coordenates[0]
-    longitude = coordenates[1]
-    
-    print(f"The {city} coordinates is:")
-    print(f"lat: {latitude}")
-    print(f"lon: {longitude}")
+    if coordenates is None:
+        print("Tente novamente com outro nome.")
+        input_city()
+    else:
+        latitude = coordenates[0]
+        longitude = coordenates[1]
+        
+        print(f"The {city} coordinates is:")
+        print(f"lat: {latitude}")
+        print(f"lon: {longitude}")
 
-    return latitude, longitude
+        return latitude, longitude
 
 #---------------------------------------------------------------------
 
@@ -48,6 +52,13 @@ def input_city():
     
     city = input("Type one real city and it'll return the climate." \
                 "\n\n")
+
+    city_exists = services.verify_city(city)
+
+    if not city_exists:
+        input("Sua cidade não existe!!" \
+        "\nAperte enter para voltar.")
+        input_city()
     
     lat_lon = display_coordenates(city)
     

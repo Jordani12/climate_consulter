@@ -1,12 +1,8 @@
 import requests
 
-from geopy.geocoders import Nominatim #verify city api
-
 import openmeteo_requests #search for climate
 import requests_cache
 from retry_requests import retry
-
-geolocator = Nominatim(user_agent="validador_cidades_app")
 
 # Setup the Open-Meteo API client with cache and retry on error
 cache_session = requests_cache.CachedSession('.cache', expire_after = 3600)
@@ -52,6 +48,11 @@ def get_coordenates(city):
         response = requests.get(url_api, params=params)
         response.raise_for_status()
         data = response.json()
+
+        if not data.get('results'):  # ✅ API found nothing
+            print(f"Cidade '{city}' não encontrada.")
+            return None
+        
         latitude_longitude = [data['results'][0]['latitude'], data['results'][0]['longitude']]
         return latitude_longitude
     except requests.exceptions.ConnectionError:
@@ -62,9 +63,23 @@ def get_coordenates(city):
         print(f"Erro HTTP: {e}")
 
 def verify_city(city):
-    city_exist = geolocator.geocode(city)
+    url = "https://nominatim.openstreetmap.org/search"
+    params = {"q": city, "format": "json", "limit": 1}
+    headers = {"User-Agent": "ClimateConsulter/1.0"}
 
-    if city_exist:
-        return True
-    else:
+    try:
+        response = requests.get(url, params=params, headers=headers, timeout=5)
+        response.raise_for_status()
+        data = response.json()
+
+        if data:
+            return True
+        else:
+            print("Cidade não encontrada.")
+            return False
+    except requests.exceptions.ConnectionError:
+        print("Sem conexão.")
+        return False
+    except requests.exceptions.Timeout:
+        print("Requisição demorou demais.")
         return False
