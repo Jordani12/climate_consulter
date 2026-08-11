@@ -1,8 +1,12 @@
 import requests
 
-import openmeteo_requests
+from geopy.geocoders import Nominatim #verify city api
+
+import openmeteo_requests #search for climate
 import requests_cache
 from retry_requests import retry
+
+geolocator = Nominatim(user_agent="validador_cidades_app")
 
 # Setup the Open-Meteo API client with cache and retry on error
 cache_session = requests_cache.CachedSession('.cache', expire_after = 3600)
@@ -11,7 +15,7 @@ openmeteo = openmeteo_requests.Client(session = retry_session)
 
 """
 Usar api para buscar as coordenadas e retornar a lat e lon
-Buscar o clima com a mesma api
+Buscar o clima api e retornar temperatura, elevação e precipitação
 """
 
 #---------------------------------------------------------------------
@@ -56,3 +60,11 @@ def get_coordenates(city):
         print("A requisição demorou demais.")
     except requests.exceptions.HTTPError as e:
         print(f"Erro HTTP: {e}")
+
+def verify_city(city):
+    city_exist = geolocator.geocode(city)
+
+    if city_exist:
+        return True
+    else:
+        return False

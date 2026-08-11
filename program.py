@@ -8,8 +8,6 @@ Pegar o clima
 Mostrar o vento e a temperatura
 """
 
-utils.clean_terminal()
-
 #---------------------------------------------------------------------
 
 def wait_to_load():
@@ -44,13 +42,33 @@ def display_coordenates(city):
 
 #---------------------------------------------------------------------
 
-while(True):
+def input_city():
+    sleep(2)
+    utils.clean_terminal()
+    
     city = input("Type one real city and it'll return the climate." \
                 "\n\n")
-
+    
     lat_lon = display_coordenates(city)
-
+    
     sleep(3)
     display_climate(lat_lon[0], lat_lon[1])
-
+    
     input("Press enter to return.")
+
+while(True): #loop
+    utils.clean_terminal()
+
+    restart = input("Do you wanna search for one city climate? Y or N\n\n")
+
+    match restart:
+        case "N" | "n":
+            sleep(1)
+            utils.clean_terminal()
+            print("Exiting...")
+            break
+        case "Y" | "y":
+            input_city()
+        case _:
+            print("Type again one of the answers")    
+
